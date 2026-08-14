@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.db
+*.sqlite
+*.sqlite3
+.env
+.env.example
+.venv/
+twa/node_modules/
+.DS_Store
+.api.pid
+.bot.pid

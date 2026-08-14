@@ -1,0 +1,28 @@
+[project]
+name = "veo-video-bot"
+version = "1.0.0"
+description = "Demo Telegram bot + TWA in the style of VideoVeoBot"
+requires-python = ">=3.10"
+dependencies = [
+    "aiogram>=3.10",
+    "sqlalchemy>=2.0",
+    "aiosqlite>=0.20",
+    "python-dotenv>=1.0",
+    "aiohttp>=3.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["bot"]

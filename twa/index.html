@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b10" />
+  <title>VideoVeoBot — AI Video Studio</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="icon" type="image/svg+xml" href="./icons/favicon.svg" />
+  <!-- Telegram Mini App SDK: provides window.Telegram.WebApp with initData, theme, close(), etc. -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <!-- App bar -->
+  <header class="app-bar">
+    <div class="app-bar__brand">
+      <span class="app-bar__title">🔥 Kling | VEO | Seedance | …</span>
+    </div>
+    <nav class="app-bar__nav" aria-label="Навигация">
+      <button class="app-bar__nav-btn" data-nav="balance" title="Баланс">💰</button>
+      <button class="app-bar__nav-btn" data-nav="history" title="История">📜</button>
+      <button class="app-bar__nav-btn" data-nav="help" title="Справка">❓</button>
+      <button class="app-bar__nav-btn" data-nav="profile" title="Профиль">👤</button>
+    </nav>
+    <button class="app-bar__close" id="closeBtnAppBar" aria-label="Закрыть">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path d="M6 6 L18 18 M6 18 L18 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Main scroll area -->
+  <main id="app" class="screen">
+
+    <!-- 1. Model picker card -->
+    <section class="card card--model" data-screen="models">
+      <div class="card__logo">
+        <span class="logo-chip">VEO</span>
+      </div>
+      <div class="card__body">
+        <div class="card__title" id="modelName">Kling 3.0</div>
+        <div class="card__subtitle" id="modelDesc">генерация видео</div>
+      </div>
+      <button class="btn btn--ghost" data-action="change-model">Изменить</button>
+    </section>
+
+    <!-- 2. Format -->
+    <section class="card" data-screen="settings">
+      <h2 class="section-title">Формат видео</h2>
+      <div class="option-row" data-field="fmt" data-value="vertical">
+        <span class="thumb thumb--vertical" aria-hidden="true"></span>
+        <div class="option-row__text">
+          <div class="option-row__title">Вертикальный</div>
+          <div class="option-row__sub">9:16 — Reels / TikTok / Shorts</div>
+        </div>
+        <span class="radio" aria-hidden="true"></span>
+      </div>
+      <div class="option-row" data-field="fmt" data-value="horizontal">
+        <span class="thumb thumb--horizontal" aria-hidden="true"></span>
+        <div class="option-row__text">
+          <div class="option-row__title">Горизонтальный</div>
+          <div class="option-row__sub">16:9 — YouTube / веб</div>
+        </div>
+        <span class="radio" aria-hidden="true"></span>
+      </div>
+    </section>
+
+    <!-- 3. Mode -->
+    <section class="card" data-screen="settings">
+      <h2 class="section-title">Режим</h2>
+      <div class="seg" role="radiogroup" aria-label="Режим генерации">
+        <button class="seg__btn is-active" data-field="mode" data-value="standard">
+          <span class="seg__title">Standard</span>
+          <span class="seg__sub">1 ген / 5 сек</span>
+        </button>
+        <button class="seg__btn" data-field="mode" data-value="pro">
+          <span class="seg__title">Pro</span>
+          <span class="seg__sub">2 ген / 5 сек</span>
+        </button>
+        <button class="seg__btn" data-field="mode" data-value="4k">
+          <span class="seg__title">4K</span>
+          <span class="seg__sub">4 ген / 5 сек</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. Duration -->
+    <section class="card" data-screen="settings">
+      <h2 class="section-title">Длительность</h2>
+      <div class="seg" role="radiogroup" aria-label="Длительность">
+        <button class="seg__btn is-active" data-field="duration" data-value="5">
+          <span class="seg__title">5 секунд</span>
+        </button>
+        <button class="seg__btn" data-field="duration" data-value="10">
+          <span class="seg__title">10 секунд</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 5. Sound -->
+    <section class="card" data-screen="settings">
+      <h2 class="section-title">Звук</h2>
+      <button class="sound-toggle" id="soundToggle">
+        <span class="sound-toggle__label">Сгенерировать звук</span>
+        <span class="sound-toggle__state" id="soundState">🔊 включён</span>
+      </button>
+      <p class="hint">В режиме 4K звук недоступен.</p>
+    </section>
+
+    <!-- 6. Image -->
+    <section class="card" data-screen="settings">
+      <h2 class="section-title">Изображение</h2>
+      <label class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept="image/png,image/jpeg" hidden />
+        <span class="dropzone__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28">
+            <path d="M12 4v12M6 10l6-6 6 6M5 20h14" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <div class="dropzone__title">Изображение (необязательно)</div>
+        <div class="dropzone__sub">Только одно изображение. JPG/PNG</div>
+        <div class="dropzone__file" id="fileName" hidden></div>
+      </label>
+    </section>
+
+    <!-- 7. Prompt -->
+    <section class="card" data-screen="settings">
+      <div class="prompt-head">
+        <h2 class="section-title section-title--inline">Промпт</h2>
+        <span class="counter" id="promptCounter">0 / 2500</span>
+      </div>
+      <textarea
+        id="prompt"
+        class="prompt"
+        rows="5"
+        maxlength="2500"
+        placeholder="Опишите, как фото должно ожить в видео: движение камеры, окружение, стиль, длительность…"
+      ></textarea>
+    </section>
+
+    <!-- 8. Cost / confirm -->
+    <section class="card card--cost" data-screen="confirm">
+      <div class="cost">
+        <span class="cost__chip">▼</span>
+        <div class="cost__label">Стоимость генерации</div>
+        <div class="cost__value"><span id="costValue">1</span> генерация</div>
+      </div>
+      <div class="balance-line">
+        <span class="balance-line__label">💰 Баланс:</span>
+        <span class="balance-line__value" id="balanceValue">10</span>
+        <span class="balance-line__sep">·</span>
+        <span class="balance-line__after" id="balanceAfter">останется 9</span>
+      </div>
+      <button class="btn btn--primary btn--block" id="runBtn">Сгенерировать</button>
+      <button class="btn btn--ghost btn--block" id="topupBtn">+ 100 генераций (демо)</button>
+    </section>
+
+    <!-- 9. Examples -->
+    <section class="card card--examples" data-screen="examples">
+      <h2 class="section-title">Примеры</h2>
+      <div class="example" id="example">
+        <video id="exampleVideo" playsinline controls muted></video>
+        <div class="example__title" id="exampleTitle">Ведущий и бабушка</div>
+        <pre class="example__prompt" id="examplePrompt"></pre>
+      </div>
+      <div class="example-nav">
+        <button class="btn btn--ghost" id="prevBtn">← Назад</button>
+        <span class="example-pos" id="examplePos">1 / 5</span>
+        <button class="btn btn--ghost" id="nextBtn">Далее →</button>
+      </div>
+    </section>
+
+    <!-- 10. Balance screen -->
+    <section class="card card--balance" data-screen="balance">
+      <h2 class="section-title">Баланс</h2>
+      <div class="balance">
+        <div class="balance__bar" id="balanceBar">
+          <span class="balance__bar-fill" id="balanceBarFill"></span>
+        </div>
+        <div class="balance__num">
+          <span id="balanceBig">10</span>
+          <span class="balance__unit">генераций</span>
+        </div>
+      </div>
+      <div class="seg seg--two">
+        <button class="seg__btn" id="topup100">+ 100</button>
+        <button class="seg__btn" id="topup500">+ 500</button>
+      </div>
+    </section>
+
+    <!-- 11. History screen -->
+    <section class="card card--history" data-screen="history">
+      <h2 class="section-title">История</h2>
+      <ul class="history" id="historyList">
+        <!-- generated by app.js -->
+      </ul>
+    </section>
+
+    <!-- 12. Profile / TWA-only screen -->
+    <section class="card card--profile" data-screen="profile">
+      <h2 class="section-title">Профиль</h2>
+      <div class="profile">
+        <div class="profile__avatar" id="profileAvatar">👤</div>
+        <div class="profile__main">
+          <div class="profile__name" id="profileName">—</div>
+          <div class="profile__sub" id="profileHandle">—</div>
+          <div class="profile__sub" id="profileId">—</div>
+        </div>
+      </div>
+      <button class="btn btn--ghost btn--block" id="reloadBtn">🔄 Обновить</button>
+      <button class="btn btn--primary btn--block" id="closeBtn">Закрыть Mini App</button>
+    </section>
+
+    <!-- 13. Help screen -->
+    <section class="card card--help" data-screen="help">
+      <h2 class="section-title">Справка</h2>
+      <div class="help-topics" id="helpTopics">
+        <button class="help-topic" data-doc="wizard-flow">🎬 Как работает генерация</button>
+        <button class="help-topic" data-doc="bot-commands">⚡ Команды бота</button>
+        <button class="help-topic" data-doc="miniapp-api">🔌 Mini App API</button>
+        <button class="help-topic" data-doc="init-data-auth">🔐 Безопасность (initData)</button>
+        <button class="help-topic" data-doc="config">⚙️ Конфигурация</button>
+      </div>
+      <div class="help-content" id="helpContent" hidden>
+        <button class="btn btn--ghost btn--block" id="helpBackBtn" style="margin-bottom:10px">← Назад</button>
+        <div class="help-content__body" id="helpBody"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Fallback for non-Telegram browsers (e.g. local dev) -->
+  <div class="fallback" id="fallback" hidden>
+    <div class="fallback__card">
+      <div class="fallback__title">Mini App недоступен</div>
+      <div class="fallback__sub">
+        Откройте эту страницу через кнопку «📱 Открыть Mini App» в боте —
+        иначе сервер не сможет проверить подпись Telegram.
+      </div>
+    </div>
+  </div>
+
+  <footer class="bottom-note">@VideoVeoBot</footer>
+
+  <script src="./js/app.js"></script>
+</body>
+</html>
