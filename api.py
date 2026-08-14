@@ -59,7 +59,7 @@ async def main() -> None:
     app = build_app(config, service)
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, config.twa_api_host, config.twa_api_port)
+    site = web.TCPSite(runner, config.twa_api_host, config.twa_api_port, shutdown_timeout=60)
     try:
         await site.start()
         logging.info(
