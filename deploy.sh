@@ -8,20 +8,15 @@ set -e
 DEPLOY_USER="root"
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "[1/4] Переход в директорию проекта..."
-cd "$APP_DIR"
-
-echo "[2/4] Git pull..."
-git pull origin master
-
-echo "[3/4] Установка зависимостей (если появились новые)..."
+echo "[1/3] Установка зависимостей (если появились новые)..."
 .venv/bin/pip install -e . -q
 
-echo "[4/4] Рестарт сервисов..."
+echo "[2/3] Рестарт сервисов..."
 pkill -f "python api.py" 2>/dev/null || true
 pkill -f "python bot.py" 2>/dev/null || true
 sleep 1
 
+echo "[3/3] Старт сервисов..."
 .venv/bin/python api.py &
 sleep 2
 .venv/bin/python bot.py &
