@@ -19,10 +19,10 @@ sleep 1
 echo "[3/3] Старт сервисов..."
 .venv/bin/python api.py &
 sleep 2
-.venv/bin/python bot.py &
-
 sleep 2
 echo ""
 echo "Готово!"
 echo "  API : http://localhost:8080"
 echo "  Bot : работает в фоне"
+.venv/bin/python bot.py
+
