@@ -27,7 +27,7 @@ class Config:
     twa_url: str = "https://t.me/VideoVeoBot"  # used as fallback if no TWA host
 
     # TWA API (aiohttp web-app)
-    twa_api_host: str = os.getenv("TWA_API_HOST", "127.0.0.1")
+    twa_api_host: str = os.getenv("TWA_API_HOST", "0.0.0.0")  # Railway needs 0.0.0.0
     twa_api_port: int = int(os.getenv("PORT", os.getenv("TWA_API_PORT", "8080")))  # Railway injects PORT
     # Comma-separated list of origins allowed to call the TWA API via CORS.
     # By default the API only accepts Authorization: tma *** from any
@@ -57,7 +57,7 @@ class Config:
             admin_ids=admin_ids,
             database_url=os.getenv("DATABASE_URL", cls.database_url),
             twa_url=os.getenv("TWA_URL", cls.twa_url),
-            twa_api_host=os.getenv("TWA_API_HOST", cls.twa_api_host),
+            twa_api_host=os.getenv("TWA_API_HOST", "0.0.0.0"),
             twa_api_port=int(os.getenv("TWA_API_PORT", str(cls.twa_api_port))),
             twa_allowed_origins=origins,
             twa_init_data_ttl=int(
